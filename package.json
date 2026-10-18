@@ -1,0 +1,25 @@
+{
+  "name": "knowledge-flow",
+  "version": "0.9.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit && node scripts/build.mjs",
+    "test": "vitest run",
+    "package": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1"
+  },
+  "dependencies": {
+    "mammoth": "1.13.0",
+    "pdfjs-dist": "4.10.38",
+    "yaml": "^2.9.1",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "0.28.2",
+    "jsdom": "^26.0.0",
+    "obsidian": "^1.8.7",
+    "typescript": "^5.8.0",
+    "vitest": "5.0.4"
+  }
+}

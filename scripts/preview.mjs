@@ -1,0 +1,14 @@
+import { build } from 'esbuild';
+import { createServer } from 'node:http';
+import { mkdir, readFile } from 'node:fs/promises';
+await mkdir('.test-output/ui-preview', { recursive: true });
+await build({ entryPoints: ['tests/preview.ts'], outfile: '.test-output/ui-preview/app.js', bundle: true, format: 'iife', platform: 'browser', alias: { obsidian: './tests/preview-obsidian.ts' } });
+const tokens = `:root{--text-normal:#27272a;--text-muted:#55555f;--text-accent:#7053c1;--text-error:#ae2032;--background-primary:#fff;--background-secondary:#f5f5f7;--background-modifier-border:#d7d7df;--background-modifier-hover:#ece9f5;--interactive-accent:#7053c1;--font-small:13px;--font-text:system-ui}body{margin:0;font:15px system-ui;background:var(--background-primary)}body.dark{--text-normal:#eeeef1;--text-muted:#b3b3bd;--text-accent:#bca5ff;--text-error:#ff8c9c;--background-primary:#202024;--background-secondary:#29292f;--background-modifier-border:#4b4b55;--background-modifier-hover:#36313f;--interactive-accent:#aa8af0}button,input,textarea,select{font:inherit;color:var(--text-normal);background:var(--background-primary);border:1px solid var(--background-modifier-border);border-radius:5px;padding:8px 12px;box-sizing:border-box}button{cursor:pointer}button:hover{background:var(--background-modifier-hover)}button.mod-cta{background:var(--interactive-accent);color:#fff;border-color:transparent}input:focus,textarea:focus,select:focus{outline:2px solid var(--interactive-accent);outline-offset:1px}button+button{margin-left:8px}.kf-nav button+button{margin:0}details summary{padding:4px 0}.preview-note{padding:8px 32px;background:var(--background-secondary);color:var(--text-muted);font-size:12px;border-bottom:1px solid var(--background-modifier-border)}`;
+const html = `<!doctype html><html lang="zh-CN"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>知流工作台 · 界面测试</title><style>${tokens}</style><link rel="stylesheet" href="/styles.css"><body><div class="preview-note">界面测试 · 示例数据，不连接 AI 服务</div><main id="app"></main><script src="/app.js"></script></body></html>`;
+if (!process.argv.includes('--build-only')) createServer(async (request, response) => {
+  const url = new URL(request.url, 'http://127.0.0.1:4177');
+  const files = { '/app.js': ['.test-output/ui-preview/app.js', 'text/javascript'], '/styles.css': ['styles.css', 'text/css'] };
+  if (url.pathname === '/') { response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); response.end(html); return; }
+  if (!files[url.pathname]) { response.writeHead(404); response.end(); return; }
+  response.writeHead(200, { 'Content-Type': files[url.pathname][1] }); response.end(await readFile(files[url.pathname][0]));
+}).listen(4177, '127.0.0.1', () => console.log('Preview: http://127.0.0.1:4177'));

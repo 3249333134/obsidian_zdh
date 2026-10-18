@@ -1,0 +1,2 @@
+export function queryTerms(s:string){return [...new Set((s.toLowerCase().match(/[\p{L}\p{N}_-]+/gu)||[]).flatMap(w=>/^[\u3400-\u9fff]{3,}$/.test(w)?[w,...Array.from({length:w.length-1},(_,i)=>w.slice(i,i+2))]:[w]))];}
+export function sections(body:string){return body.replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/,'').split(/(?=^#{1,6}\s)/m).flatMap(p=>Array.from({length:Math.ceil(p.length/1800)},(_,i)=>({heading:p.match(/^#{1,6}\s+(.+)/)?.[1]||'',text:p.slice(i*1800,(i+1)*1800)})));}

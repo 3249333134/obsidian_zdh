@@ -1,0 +1,48 @@
+// Presentation-only adaptation of the canonical Diary panel. Fail explicitly on source drift.
+export function compactPanel(original){
+ let source=original.replace(/\r\n/g,'\n');
+ const replace=(before,after)=>{if(!source.includes(before))throw new Error('Diary compact presentation anchor missing: '+before.slice(0,90));source=source.replace(before,after);};
+ source="import {PlanContext} from 'knowledge-flow-plan-context';\n"+source;
+ replace('<TodoStats rows={combined} filter={filter} onFilter={setFilter} />','');
+ replace('{categoryControls}\n        <div className="plan-content-toolbar">','<div className="plan-content-toolbar">');
+ const timeTabs=source.match(/      <nav className="plan-time-tabs"[^\n]+\n/);if(!timeTabs)throw Error('Missing duplicate status tabs');source=source.replace(timeTabs[0],'');
+ replace('<button type="button" className="plan-add-button" aria-label="新增计划" title="新增计划" onClick={()=>createPlan()}><Plus size={21}/></button>','');
+ replace('<p>从记录出发，完成后留下真正发生的事。</p>','');
+ replace('<h2 id="todo-title">我的计划</h2>','<h2 id="todo-title">{rangeLabels[filter]}计划</h2>');
+ replace("const createPlan = (category?: string) => { const clock=planClock();setQuickText(''); setCreateId(crypto.randomUUID()); setParsed({title:'',dueDate:clock.date,dueTime:clock.time,priority:'medium',list:'',tags:[],category:category||undefined}); };","const createPlan = (category?: string) => { window.dispatchEvent(new CustomEvent('kf-quick-create',{detail:{category}})); };");
+ replace('<span>{rangeLabels[filter]}</span>{hasExtraFilters','<span>更多筛选</span>{hasExtraFilters');
+ replace('aria-label="筛选计划" aria-haspopup="dialog"','aria-label="更多筛选" aria-haspopup="dialog"');
+ replace("([['board','四象限'],['windows','窗口'],['list','列表'],['week','周'],['month','月']] as const)","([['list','列表'],['week','周'],['month','月']] as const)");
+ replace('</button>)}</nav>\n        </div>\n      </div>','</button>)}</nav><details className="kf-more-views"><summary>{layout===\'board\'?\'四象限\':layout===\'windows\'?\'分类窗口\':\'更多视图\'}</summary><div>{([[\'board\',\'四象限\'],[\'windows\',\'分类窗口\']] as const).map(([key,label])=><button key={key} type="button" aria-pressed={layout===key} onClick={e=>{setLayout(key);e.currentTarget.closest(\'details\')?.removeAttribute(\'open\');}}>{label}</button>)}</div></details>\n        </div>\n      </div>');
+ replace('onClick={()=>{setExpanded(value=>!value);}}','onClick={()=>onEdit(row)}');
+ replace('aria-expanded={expanded} aria-controls={detailsId} onClick={()=>onEdit(row)}','onClick={()=>onEdit(row)}');
+ replace('<ChevronDown size={18} className="plan-expand-icon"/>','<Pencil size={15} className="plan-expand-icon"/>');
+ replace('      <div id={detailsId} hidden={!expanded}', '      <button type="button" className="quiet-button kf-card-more" aria-label={\'更多操作：\'+row.task.title} aria-expanded={expanded} aria-controls={detailsId} onClick={()=>setExpanded(v=>!v)}>更多操作</button>\n      <div id={detailsId} hidden={!expanded}');
+ replace('<Check size={15} />完成\n','<Check size={15} />完成并记日记\n');
+ replace('<span className="plan-category-label">{categoryLabel}</span>','<span className="plan-category-label">{categoryLabel}</span><span className="kf-plan-sync-badge">{(row as any).sync?.label||\'仅本地\'}</span>');
+ replace("    } else {\n      setCompleting(row);\n    }\n  };","    } else if(row.completionPending||row.pendingRecord) {setCompleting(row);} else {void act(row,'complete');}\n  };");
+ replace("if (status === 'done') setCompleting(row); else void act(row, 'status', row.task, { nextStatus: status });","if (status === 'done') void act(row,'complete'); else void act(row, 'status', row.task, { nextStatus: status });");
+ replace('const ownVersion = await prepare(input.date);','await prepare(input.date);');
+ replace('expected=ownVersion||input.version','expected=input.version');
+ replace("const saveEdit = (updated: Todo) => {\n    if (!editing) return;","const saveEdit = async (updated: Todo) => {\n    if (!editing) return false;");
+ replace("    const latest = combined.find(r=>r.task.id===editing.task.id) || editing;\n",'');
+ replace("    void act(latest, 'update', updated).then(ok => { if (ok) setEditing(null); });","    const ok=await act(editing, 'update', updated);if(ok)setEditing(null);return ok;");
+ replace('function EditModal({ row, busy, error, onSave, onClose, entityContext, onSeries }: {','function EditModal({ row, busy, error, onSave, onClose, entityContext, onSeries, onRecord }: {\n  onRecord:()=>void;');
+ replace('onSave: (task: Todo) => void;','onSave: (task: Todo) => Promise<boolean>;');
+ replace('  const save = () => {','  const save = async () => {');
+ replace("    if(scope==='future')onSeries(updated,false);else onSave(updated);","    if(scope==='future'){onSeries(updated,false);return false;}return await onSave(updated);");
+ const editor=source.indexOf('function EditModal(');
+ const dialog='<PlanDialog busy={busy} onClose={onClose}>';const pos=source.indexOf(dialog,editor);if(pos<0)throw Error('Missing editor dialog');source=source.slice(0,pos)+source.slice(pos).replace(dialog,'<PlanDialog busy={busy} onClose={onClose} drawer>');
+ replace('label = "计划编辑" }: {','label = "计划编辑", drawer=false }: { drawer?:boolean;');
+ replace('return <GlassDialog label={label} busy={busy} onClose={onClose}>','return <GlassDialog label={label} busy={busy} onClose={onClose} className={drawer?\'kf-plan-drawer\':\'plan-edit-dialog\'}>');
+ const dateField='<DateTimeField label="截止时间" date={dueDate} time={dueTime} onChange={(d,t)=>{setDueDate(d);setDueTime(t);}}/>';
+ replace(dateField,'');
+ replace('          <ClassificationFields value={classification}','          '+dateField+'\n          <PlanContext row={row}/>\n          <details className="kf-plan-advanced"><summary>重复、分类与更多属性</summary>\n          <ClassificationFields value={classification}');
+ replace('          {/* 子任务 */}','          <label className="field"><span>标签（逗号分隔）</span><input value={tagsInput} onChange={e=>setTagsInput(e.target.value)}/></label></details>\n          {/* 子任务 */}');
+ replace('<p>修改任务属性</p>','<p>截止时间决定日程位置；原定开始时间单独保留。</p>');
+ replace('<button className="quiet-button" disabled={busy || !title.trim()} onClick={save}>保存</button>','<button className="quiet-button" disabled={busy||!title.trim()||scope===\'future\'||row.task.done} onClick={()=>{void save().then(ok=>{if(ok)onRecord();});}}>保存并记完成日记</button><button className="save-button" disabled={busy || !title.trim()} onClick={save}>保存计划</button>');
+ replace('          row={editing}\n          error={error}','          row={editing}\n          onRecord={()=>setCompleting(editing)}\n          error={error}');
+ replace("  const [layout, setLayout] = useState<'board'|'list'|'windows'|'week'|'month'>('board');","  const [layout, setLayout] = useState<'board'|'list'|'windows'|'week'|'month'>(()=>(window as any).__KF_INITIAL_LAYOUT||'list');\n  useEffect(()=>{window.dispatchEvent(new CustomEvent('kf-layout-changed',{detail:{layout}}));},[layout]);");
+ replace("  const [categoryFilter,setCategoryFilter] = useState('all');","  const [categoryFilter,setCategoryFilter] = useState('all');\n  useEffect(()=>{const created=()=>{setFilter('all');setCategoryFilter('all');setSourceFilter('all');setListFilter('');setViewFilter('');};window.addEventListener('kf-created-plan',created);return()=>window.removeEventListener('kf-created-plan',created);},[]);");
+ return source;
+}

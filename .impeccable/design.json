@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-18T00:59:43.0584722Z",
+  "title": "Design System: 知流工作台",
+  "extensions": {
+    "breakpoints": [
+      {
+        "name": "host-task-row",
+        "value": "650px",
+        "purpose": "ItemView container width; native task rows may become horizontal"
+      },
+      {
+        "name": "diary-sidebar",
+        "value": "700px",
+        "purpose": "Isolated plan sidebar collapses below this width"
+      },
+      {
+        "name": "company-search",
+        "value": "760px",
+        "purpose": "Company results and graph become a single column; role controls stack and file provenance moves below its title"
+      },
+      {
+        "name": "company-admin",
+        "value": "720px",
+        "purpose": "Admin rows stack and editor padding reduces"
+      }
+    ],
+    "shadows": [],
+    "motion": []
+  },
+  "components": [
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "host-button-primary",
+      "description": "Lavender host primary action; confirmation remains explicit.",
+      "html": "<button class=\"ds-control ds-primary\">确认提交审核</button>",
+      "css": ".ds-primary{background:var(--kf-accent,#7353c8);color:#fff;border:1px solid var(--kf-accent,#7353c8);border-radius:9px;min-height:36px;padding:7px 12px;font:inherit}.ds-primary:hover:not(:disabled){filter:brightness(.97)}.ds-primary:disabled{opacity:.55;cursor:wait}.ds-control:focus-visible{outline:2px solid var(--kf-accent,#7353c8);outline-offset:3px}"
+    },
+    {
+      "name": "Secondary Action",
+      "kind": "button",
+      "description": "Quiet outlined action for inspecting content or returning to personal work.",
+      "html": "<button class=\"ds-control ds-secondary\">查看送审正文</button>",
+      "css": ".ds-secondary{background:var(--kf-panel,#fff);color:var(--kf-ink,#2e283d);border:1px solid var(--kf-line,#e3ddef);border-radius:9px;min-height:36px;padding:7px 12px;font:inherit}.ds-secondary:hover:not(:disabled){filter:brightness(.97)}.ds-secondary:disabled{opacity:.55;cursor:wait}.ds-control:focus-visible{outline:2px solid var(--kf-accent,#7353c8);outline-offset:3px}"
+    },
+    {
+      "name": "Stacked Field",
+      "kind": "input",
+      "description": "Explicit labels, theme-bound fields and visible focus; credentials use password inputs.",
+      "html": "<label class=\"ds-field\"><span>公司服务地址</span><input class=\"ds-control\" value=\"https://company.example\"></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:8px;margin-block:18px;color:var(--kf-ink,#2e283d);font:14px/1.65 system-ui}.ds-field span{font-weight:550}.ds-field input{background:var(--kf-panel,#fff);color:inherit;border:1px solid var(--kf-line,#e3ddef);border-radius:8px;min-height:36px;padding:7px 10px;font:inherit;min-width:0}.ds-field input:hover{border-color:var(--kf-accent,#7353c8)}.ds-control:focus-visible{outline:2px solid var(--kf-accent,#7353c8);outline-offset:3px}"
+    },
+    {
+      "name": "Company Navigation",
+      "kind": "nav",
+      "description": "Wrapping task navigation keeps authorization scope separate from tab selection.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"公司工作台导航\"><button class=\"ds-control\" aria-current=\"page\">知识</button><button class=\"ds-control\">共享与审核</button><button class=\"ds-control\">AI 问答</button><button class=\"ds-control\">团队项目</button></nav>",
+      "css": ".ds-nav{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--kf-line,#e3ddef);padding:12px 0;margin:8px 0 20px;font:14px/1.65 system-ui}.ds-nav button{border:1px solid var(--kf-line,#e3ddef);border-radius:9px;min-height:36px;padding:7px 12px;background:var(--kf-panel,#fff);color:var(--kf-ink,#2e283d);font:inherit}.ds-nav button[aria-current=page]{color:#fff;background:var(--kf-accent,#7353c8)}.ds-nav button:hover{filter:brightness(.97)}.ds-control:focus-visible{outline:2px solid var(--kf-accent,#7353c8);outline-offset:3px}"
+    },
+    {
+      "name": "Knowledge Record",
+      "kind": "custom",
+      "description": "Open divided record; title first, then authorized space/version/status and actions.",
+      "html": "<article class=\"ds-record\"><h3>项目方法总结</h3><small>研发空间 · v2</small><p>等待审核</p><button class=\"ds-control\">查看送审正文</button></article>",
+      "css": ".ds-record{padding:18px 0;border-bottom:1px solid var(--kf-line,#e3ddef);color:var(--kf-ink,#2e283d);font:14px/1.65 system-ui}.ds-record h3{margin:0 0 8px;overflow-wrap:anywhere}.ds-record small{display:block;color:var(--kf-muted,#6b617b)}.ds-record button{margin:5px 6px 0 0;background:var(--kf-panel,#fff);color:inherit;border:1px solid var(--kf-line,#e3ddef);border-radius:9px;padding:7px 12px;font:inherit}.ds-record button:hover{filter:brightness(.97)}.ds-control:focus-visible{outline:2px solid var(--kf-accent,#7353c8);outline-offset:3px}"
+    },
+    {
+      "name": "Submission Preview",
+      "kind": "card",
+      "description": "Bounded editable upload preview; attachments have a preparation state before submission.",
+      "html": "<section class=\"ds-preview\"><h3>本次实际上传内容</h3><p>只提交预览正文和所选附件，个人备注保留在本机。</p><p role=\"status\">正在读取并核对所选附件…</p><button class=\"ds-control\" disabled>确认提交审核</button></section>",
+      "css": ".ds-preview{padding:22px;border:1px solid var(--kf-line,#e3ddef);border-radius:14px;background:var(--kf-panel,#fff);color:var(--kf-ink,#2e283d);margin:20px 0;font:14px/1.65 system-ui}.ds-preview h3{margin:0 0 8px}.ds-preview button{background:var(--kf-accent,#7353c8);color:#fff;border:0;border-radius:9px;padding:7px 12px;font:inherit}.ds-preview button:disabled{opacity:.55;cursor:wait}.ds-preview button:hover:not(:disabled){filter:brightness(.97)}.ds-control:focus-visible{outline:2px solid var(--kf-accent,#7353c8);outline-offset:3px}"
+    },
+    {
+      "name": "Scope Badge",
+      "kind": "chip",
+      "description": "Compact textual provenance or project state; never a substitute for authorization.",
+      "html": "<span class=\"ds-badge\">公司团队</span>",
+      "css": ".ds-badge{display:inline-block;color:var(--kf-accent,#7353c8);background:var(--kf-soft,#ede8fa);border-radius:6px;padding:3px 8px;font:12px/1.65 system-ui}"
+    },
+    {
+      "name": "Single Authorized Node",
+      "kind": "custom",
+      "description": "Small result graphs center a single node rather than occupying a large empty canvas.",
+      "html": "<div class=\"ds-graph\"><svg viewBox=\"0 0 600 240\" role=\"img\" aria-label=\"公司授权知识关系图谱\"><g class=\"ds-control\" role=\"button\" tabindex=\"0\" aria-label=\"项目总结\" transform=\"translate(300 120)\"><circle r=\"7\"/><text y=\"23\" text-anchor=\"middle\">项目总结</text></g></svg></div>",
+      "css": ".ds-graph{color:var(--kf-ink,#2e283d);font:14px/1.65 system-ui}.ds-graph svg{width:100%;height:240px}.ds-graph circle{fill:var(--kf-accent,#7353c8)}.ds-graph text{fill:currentColor;font-size:12px}.ds-graph g{cursor:pointer}.ds-control:focus-visible{outline:2px solid var(--kf-accent,#7353c8);outline-offset:3px}"
+    },
+    {
+      "name": "Role Context Selectors",
+      "kind": "custom",
+      "description": "Independent current role and knowledge space selectors; role spaces select their role while space filters shared material only.",
+      "html": "<div class=\"ds-role-controls\"><label><span>当前岗位</span><select><option>运营</option><option>个人通用工作流</option></select></label><label><span>知识空间</span><select><option>全部有权空间</option><option>运营空间</option></select></label></div>",
+      "css": ".ds-role-controls{display:grid;grid-template-columns:minmax(180px,1fr) minmax(220px,2fr);gap:16px;margin-bottom:20px;color:var(--kf-ink,#2e283d);font:14px/1.65 system-ui}.ds-role-controls label{display:flex;flex-direction:column;gap:8px;margin:12px 0}.ds-role-controls label span{font-size:13px}.ds-role-controls select{width:100%;min-height:36px;border:1px solid var(--kf-line,#e3ddef);border-radius:8px;background:var(--kf-panel,#fff);color:inherit;font:inherit}.ds-role-controls select:focus-visible{outline:2px solid var(--kf-accent,#7353c8);outline-offset:3px}@media(max-width:760px){.ds-role-controls{grid-template-columns:1fr;gap:0}}"
+    },
+    {
+      "name": "Role Stage Navigation",
+      "kind": "nav",
+      "description": "Nine native disclosure stages; each exposes its purpose, business categories, creation actions and actual material with textual provenance.",
+      "html": "<section class=\"ds-role-stages\"><details class=\"ds-role-stage\" open><summary>01_UNDERSTAND-理解层</summary><p>理解事实、问题和证据</p><p>用户与渠道 · 指标口径 · 用户反馈</p><div class=\"ds-role-file\"><button>渠道反馈</button><small>个人 · 本机</small></div></details><details class=\"ds-role-stage\"><summary>02_CONTENT-内容选题</summary><p>形成可执行的内容与方案</p></details></section>",
+      "css": ".ds-role-stages{margin-top:24px;border-top:1px solid var(--kf-line,#e3ddef);color:var(--kf-ink,#2e283d);font:14px/1.65 system-ui}.ds-role-stage{padding:14px 0;border-bottom:1px solid var(--kf-line,#e3ddef)}.ds-role-stage summary{cursor:pointer;font-weight:650;min-height:32px;line-height:32px}.ds-role-stage p{margin:8px 0;max-width:75ch;color:var(--kf-muted,#6b617b)}.ds-role-file{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0}.ds-role-file button{white-space:normal;text-align:left;height:auto;min-height:32px;background:var(--kf-panel,#fff);color:inherit;border:1px solid var(--kf-line,#e3ddef);border-radius:9px;padding:7px 12px;font:inherit}.ds-role-file small{color:var(--kf-muted,#6b617b)}.ds-role-file button:hover{filter:brightness(.97)}.ds-role-stage :focus-visible{outline:2px solid var(--kf-accent,#7353c8);outline-offset:3px}@media(max-width:760px){.ds-role-file{display:block}.ds-role-file small{display:block;margin-top:4px}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "浅紫知识工作台",
+    "overview": "沿用用户指定的浅紫色计划界面。浅紫背景、紫色主要操作、柔和圆角与分区延续到导入、待确认、记录、同步、配置、搜索问答和项目管理。品牌样式限制在插件内，Obsidian 的外壳、其他插件和用户笔记不受影响。\n\n0.7.1 的“计划与日程”直接复用 Diary 的计划组件与样式。宿主负责同步、项目关联和保存范围；计划工作区负责编辑、筛选与日程。两层保留各自现有的颜色变量，不把 Diary 全局样式注入 Obsidian。\n\n0.8.0 的公司工作台及独立管理网页延续同一浅紫系统，不另建企业品牌皮肤。公司页面以连接身份、同步状态、授权空间和当前工作为顺序，使用紧凑标签、纵向表单与有分隔的真实记录，明确个人资料和公司共享的边界。",
+    "keyCharacteristics": [
+      "浅紫表面、紫色主操作与系统字体保持连续。",
+      "授权范围、来源、同步归属与审核状态使用明确文字。",
+      "先显示当前任务，配置和次要字段按需展开。",
+      "确认前展示实际提交内容，空状态不填充演示统计。"
+    ],
+    "rules": [
+      {
+        "name": "The Scoped Palette Rule",
+        "body": "浅紫身份只作用于知流页面；宿主、共享计划和管理网页分别维护主题作用域，不能把某个作用域的浅色值注入另一个作用域。",
+        "section": "colors"
+      },
+      {
+        "name": "The Working Scope Rule",
+        "body": "公司／个人资料范围、岗位、空间或访问权改变时，清空上一范围的回答、历史与检索结果；迟到响应不能重新显示旧范围材料。范围选择是实际资料边界，不是装饰性筛选。",
+        "section": "layout"
+      }
+    ],
+    "dos": [
+      "Do 复用 Diary 的计划组件、数据契约和重复逻辑，通过适配层连接 Markdown 与网站。",
+      "Do 使用本地离线 `srcdoc` 工作区隔离样式，通过校验来源与 nonce 的消息接口操作；工作区本身不联网，不嵌入整个网站。",
+      "Do 在明暗主题、窄窗口和长表单下检查可读性与确认按钮；合成截图数据只用于验收。",
+      "Do 保留知识项目、来源链接、人工确认、冲突和保存范围；不以界面简化掩盖数据行为。",
+      "Do 在提交、问答和团队任务旁明确公司／个人范围、实际发送内容与来源，保持审核和执行动作可追溯。",
+      "Do 为无授权结果、单节点图谱、未分配岗位和附件准备失败提供真实且可操作的状态。"
+    ],
+    "donts": [
+      "Don't 把日程改期描述为只改变计划执行时间；当前共享计划遵循 Diary 的截止时间规则。",
+      "Don't 将本地项目资料、个人备注或文件路径展示为默认会上传的计划内容。",
+      "Don't 用占位统计或模拟截图宣称实际部署、设备同步或原生应用验收已经完成。",
+      "Don't 把岗位模板、公司导航选中态或隐藏按钮当作服务端授权检查的替代。",
+      "Don't 在范围切换后保留旧回答，或在附件未完成读取时允许确认提交。"
+    ]
+  }
+}

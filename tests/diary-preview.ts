@@ -1,0 +1,20 @@
+import {DiaryView} from '../src/diary-view';
+const proto=HTMLElement.prototype as any;proto.empty=function(){this.replaceChildren();};proto.addClass=function(...names:string[]){this.classList.add(...names);};proto.createEl=function(tag:string,o:any={}){const el=document.createElement(tag);if(o.text)el.textContent=o.text;if(o.cls)el.className=o.cls;if(o.value!==undefined)el.setAttribute('value',o.value);if(o.type)el.setAttribute('type',o.type);for(const[k,v]of Object.entries(o.attr||{}))el.setAttribute(k,String(v));this.appendChild(el);return el;};proto.createDiv=function(o:any){return this.createEl('div',o);};
+const params=new URLSearchParams(location.search);if(params.get('theme')==='dark')document.body.classList.add('theme-dark');
+const date='2026-10-16',project={id:'demo-project',title:'示例 · 知识产品规划'};
+const tasks=new Map(Array.from({length:4},(_,i)=>['demo-task-'+i,{id:'demo-task-'+i,title:['核对研究资料的年份和口径','整理下一版功能清单','复盘本周的产品决策','安排下周的用户访谈'][i],projectId:i<2?project.id:'',category:i===3?'个人生活':'工作',status:i===2?'done':'todo',plan:{id:'demo-task-'+i,title:['核对研究资料的年份和口径','整理下一版功能清单','复盘本周的产品决策','安排下周的用户访谈'][i],category:i===3?'personal':'work',important:i<2,urgent:i===0,done:i===2,status:i===2?'done':'todo',priority:i===0?'high':'medium',dueDate:date,dueTime:i===0?'09:30':'',startDate:date,startTime:'09:00',description:'界面验收合成示例，不是真实项目。',subtasks:i===0?[{id:'sub-1',title:'核对来源日期',done:false}]:[],tags:['产品研究'],list:'',repeat:null,attachments:[],createdAt:'',time:''}}]));
+const state:any={categories:[{id:'work',name:'工作',color:'#7db2df',order:0},{id:'personal',name:'个人生活',color:'#c1a183',order:1}],views:[],tags:[],pending:[],conflicts:[],connection:{account:'demo',username:'合成验收账号',enabled:true,url:'https://diary.example',token:''}};
+const engine:any={toTodo:(t:any)=>t.plan,uploadPreview:(t:any)=>t.plan,api:async(method:string,args:any[])=>{
+ (window as any).__diaryCalls.push({method,args});
+ const rows=()=>[...tasks.values()].map(t=>({date,version:'v1',task:t.plan,localId:t.id,sourceExists:false,completionExists:false}));
+ if(method==='plannerContext'){const task=tasks.get(args[0]);return {projects:[project],projectId:task?.projectId||'',localId:task?.id,hash:'fixture',connected:true,bound:false,syncLabel:'仅本地',defaultCloud:false};}
+ if(method==='savePlannerPreferences'){state.preferences={...state.preferences,...args[0]};return state.preferences;}
+ if(method==='assignPlanProject'){tasks.get(args[0]).projectId=args[1];return{};}
+ if(method==='quickCreatePlan'){const input=args[0];tasks.set(input.id,{id:input.id,title:input.title,projectId:input.projectId,plan:{id:input.id,title:input.title,dueDate:input.dueDate,dueTime:input.dueTime,status:'todo',done:false,subtasks:[],tags:[],repeat:null,priority:'medium',category:input.category,startDate:'',startTime:'',time:'',createdAt:''}});return{localId:input.id};}
+ if(method==='actions')return{tasks:rows(),records:[]};if(method==='schedule')return{tasks:rows()};if(method==='loadDiary')return{document:{date,todos:[],facts:{events:[],note:''},learn:{content:''},input:{excerpt:''},idea:{content:''}},version:'v1',exists:true};if(method==='planCategories')return{categories:state.categories};if(method==='planViews')return{views:[]};if(method==='tagLibrary')return{tags:['产品研究','交付','复盘']};if(method==='parseTodo')return{title:args[0],dueDate:'',dueTime:'',priority:'medium',list:'',tags:[]};
+ if(method==='changeAction'){const input=args[0],plan=input.mode==='complete'?{...input.task,done:true,status:'done'}:input.task;tasks.set(input.task.id,{...tasks.get(input.task.id),id:input.task.id,title:input.task.title,plan});return{diary:{document:{date,todos:[plan]},version:'v2'}};}return{};
+}};
+const store={projects:new Map([[project.id,project]]),tasks,issues:[],load:async()=>{},saveTask:async(t:any)=>{tasks.set(t.id,t);return t;}};
+(window as any).__diaryCalls=[];(window as any).__diaryTasks=tasks;
+const plugin:any={projects:()=>store,diaryState:state,diary:()=>engine,openProjects:async()=>{}};
+const view=new DiaryView({contentEl:document.getElementById('app'),app:{workspace:{openLinkText:async()=>{}}}}as any,plugin);void view.onOpen();

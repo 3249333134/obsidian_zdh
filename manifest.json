@@ -1,0 +1,9 @@
+{
+  "id": "knowledge-flow",
+  "name": "知流工作台",
+  "version": "0.9.0",
+  "minAppVersion": "1.8.0",
+  "description": "AI 知识整理、图谱问答与计划日程；可选公司模式支持岗位空间、审核发布和团队任务。",
+  "author": "Knowledge Flow",
+  "isDesktopOnly": true
+}

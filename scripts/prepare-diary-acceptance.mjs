@@ -1,0 +1,11 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+const root=path.resolve('.test-output/Diary 0.7 原生验收'),config=path.join(root,'.obsidian'),qa=JSON.parse(await fs.readFile('.test-output/diary-qa-private.json','utf8'));
+await fs.mkdir(path.join(config,'plugins','knowledge-flow'),{recursive:true});
+for(const file of await fs.readdir('dist/knowledge-flow'))await fs.copyFile('dist/knowledge-flow/'+file,path.join(config,'plugins','knowledge-flow',file));
+const state={version:1,settings:{initialized:true},tasks:[],projects:{categories:['工作','个人生活'],suggestions:[],operations:[],reviews:[]},diary:{resources:{},bases:{},pending:[],conflicts:[],categories:[{id:'work',name:'工作',color:'#7db2df',order:0},{id:'personal',name:'个人生活',color:'#c1a183',order:1}],views:[],tags:[],connection:{url:'https://47.115.220.98:3399',token:qa.device.token,account:createHash('sha256').update('https://47.115.220.98:3399|'+qa.accountId).digest('hex').slice(0,16),accountId:qa.accountId,username:qa.username,enabled:true,timezone:'Asia/Shanghai',keys:{categories:'07_SYSTEM-系统/plan-categories.json',views:'07_SYSTEM-系统/plan-views.json',tags:'07_SYSTEM-系统/shared-tags.json'}}}};
+await fs.writeFile(path.join(config,'plugins','knowledge-flow','data.json'),JSON.stringify(state,null,2));
+await fs.writeFile(path.join(config,'community-plugins.json'),JSON.stringify(['knowledge-flow']));
+await fs.writeFile(path.join(config,'workspace.json'),JSON.stringify({main:{id:'acceptance-main',type:'split',children:[{id:'acceptance-tabs',type:'tabs',children:[{id:'acceptance-plan',type:'leaf',state:{type:'knowledge-flow-diary-plans',state:{},icon:'calendar-days',title:'计划与日程'}}]}],direction:'vertical'},active:'acceptance-plan'},null,2));
+console.log('Prepared isolated native acceptance vault: '+root);
